@@ -29,4 +29,4 @@ Another thing -- a lot of the floating-point functions contain an `err` paramete
 Also, I need to figure out how all those special values (`nan`, `+inf`, `-inf`) actually work.
 
 #### io
-Obviously, IO without the nice C Standard Library is going to have to get a little dirty with the kernel. I haven't decided whether I'm going to target a more BSD-like syscall interface (like macOS) or Linux (or both). I'll probably start work once I decide that. At any rate, help with porting to other OSs would be appreciated.
+Obviously, IO without the nice C Standard Library is going to have to get a little dirty with the kernel. The IO code targets the BSD-like syscall interface of macOS (for 32-bit x86 architecture). It makes use of GCC inline assembly syntax. Help porting to other OSs would be appreciated.

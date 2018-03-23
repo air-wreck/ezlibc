@@ -202,3 +202,14 @@ ez_tan(double x, double err)
      so we'll just fall back on trig identities, although it hurts our err */
   return ez_sin(x, err) / ez_cos(x, err);
 }
+
+double
+ez_sqrt(double x, double err)
+{
+  if (x < 0) return EZ_NAN;
+
+  /* sqrt(c) is the zero of x^2 - c
+     find the root with Newton's method
+     I'll figure this out later */
+  return 0;
+}

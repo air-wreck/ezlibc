@@ -168,4 +168,15 @@ ez_cos(double x, double err);
 double
 ez_tan(double x, double err);
 
+/* square root
+
+   parameters:
+   double x: arg to sqrt(x)
+   double err: max permissable error
+
+   returns:
+   double res: the value of sqrt(x) */
+double
+ez_sqrt(double x, double err);
+
 #endif
