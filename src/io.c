@@ -148,3 +148,45 @@ ez_exit(int status)
     : "eax"
   );
 }
+
+int
+ez_str10_to_int(const char *str10)
+{
+  /* detect presence of a +/- sign char */
+  int sign;  /* sign +1/-1 */
+  int start_index;  /* starting index of the actual numeric part */
+  if (str10[0] == '+') {
+    sign = 1;
+    start_index = 1;
+  } else if (str10[0] == '-') {
+    sign = -1;
+    start_index = 1;
+  } else if (str10[0] >= 48 && str10[0] <= 57 ){
+    /* check to see if the first char is numeric */
+    sign = 1;
+    start_index = 0;
+  } else {
+    /* the string is not a valid int */
+    return -1;
+  }
+
+  /* get the length of the numeric part of the string */
+  int len = 0;
+  while (str10[start_index + len] != EZ_NULL) {
+    len++;
+  }
+
+  /* loop through powers of ten and convert to int */
+  int num = 0;
+  int i;
+  for (i = start_index; i < start_index + len; i++) {
+    int pwr_ten = 1;
+    int j;
+    for (j = 0; j < len - i - 1 + start_index; j++) {
+      pwr_ten *= 10;
+    }
+    num += pwr_ten * (str10[i] - 48);
+  }
+
+  return sign * num;
+}

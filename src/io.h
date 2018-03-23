@@ -5,6 +5,10 @@ basic input and output */
 #ifndef EZ_IO_
 #define EZ_IO_
 
+/* define the NULL constant to be 0
+   we'll just hope that this holds true for our platforms */
+#define EZ_NULL 0
+
 /* printing to stdout
 
    parameters:
@@ -67,5 +71,18 @@ ez_getchar();
    int status: exit status */
 void
 ez_exit(int status);
+
+/* convert a base ten string representation to an integer
+
+   parameters:
+   const char *str10: base ten string, with optional sign
+
+   returns:
+   int num: integer represented by string
+
+   error:
+   returns -1 on error */
+int
+ez_str10_to_int(const char *str10);
 
 #endif

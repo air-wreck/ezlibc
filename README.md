@@ -30,6 +30,12 @@ python tests/test-math.py -v
 
 Although apparently `ctypes`'s behavior varies from OS to OS? It seems to work on macOS, so whatever.
 
+Note that the IO tests rely on separately compiled binaries that provide wrappers around the original C functions, since the C is written for 32-bit x86 but I'm running Python in 64-bit and it's a headache to get those to work together directly. So, before you run the IO tests, you might want to build the latest `tests/io-driver/` test programs:
+
+```
+make tests
+```
+
 ### comments
 
 #### math
