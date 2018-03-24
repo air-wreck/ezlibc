@@ -9,3 +9,7 @@ example.dSYM/*
 
 # don't track compiled io-test drivers
 tests/io-driver/*.out
+
+# don't track temporary vim files
+*.swp
+
