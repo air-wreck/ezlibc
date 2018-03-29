@@ -6,7 +6,6 @@ you can build with "make example" */
 
 #include "src/math.h"
 #include "src/io.h"
-#include <stdio.h>
 
 int
 main()
