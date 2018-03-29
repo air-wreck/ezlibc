@@ -56,14 +56,26 @@ ez_f_print(double n, int places);
 int
 ez_str_print(const char *msg);
 
-/* get char from stdin, automatically disposing of
-   trailing newline (maybe fix later with better
-   implementation)
+/* get char from stdin
+   does not dispose of trailing newline
 
    returns:
    char c: char from stdin */
 char
 ez_getchar();
+
+/* get string from stdin
+
+   parameters:
+   char *buf: byte buffer for string
+              should be at least len+1 bytes long
+   int len: length of string
+            this does not include the NULL
+
+   returns:
+   int n: number of bytes written to *buf */
+int
+ez_n_getstr(char *buf, int len);
 
 /* exit process
 

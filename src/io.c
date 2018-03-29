@@ -116,24 +116,29 @@ ez_getchar()
     "int $0x80;"
     "addl $16, %%esp;"
     :: "g" (&res)
-    : "esp"
+    : "esp", "eax"
   );
+  return res;
+}
 
-  /* now eat up the extra newline
-     this needs to be implemented better */
-  char tmp;
-  __asm__ volatile (
+int
+ez_n_getstr(char *buf, int len)
+{
+  int n;
+  __asm__ (
     "movl $3, %%eax;"
-    "pushl $1;"
-    "pushl %0;"
+    "pushl %1;"
+    "pushl %2;"
     "pushl $0;"
     "pushl %%eax;"
     "int $0x80;"
     "addl $16, %%esp;"
-    :: "g" (&tmp)
+    : "=a" (n)
+    : "g" (len), "g" (buf)
     : "esp"
   );
-  return res;
+  buf[n] = EZ_NULL;
+  return n;
 }
 
 void
@@ -173,6 +178,10 @@ ez_str10_to_int(const char *str10)
   /* get the length of the numeric part of the string */
   int len = 0;
   while (str10[start_index + len] != EZ_NULL) {
+    /* check if this character is a valid integer */
+    if (str10[start_index + len] < 48 || str10[start_index + len] > 57) {
+      return -1;
+    }
     len++;
   }
 

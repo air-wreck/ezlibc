@@ -1,6 +1,6 @@
 CC = gcc
 
-all:example lib/ezlibc-math.so
+all: example lib/ezlibc-math.so lib/ezlibc-io.so lib/ezlibc.so
 
 example: example.c src/math.c src/io.c
 		cc example.c src/math.c src/io.c -o example -m32 -g
@@ -8,7 +8,7 @@ example: example.c src/math.c src/io.c
 libs: src/io.c src/math.c
 		cc -fPIC -shared -o lib/ezlibc-math.so src/math.c
 		cc -fPIC -shared -o lib/ezlibc-io.so src/io.c -m32
-		cc -fPIC -shared -o lib/ezlic.so src/math.c src/io.c -m32
+		cc -fPIC -shared -o lib/ezlibc.so src/math.c src/io.c -m32
 
 tests: src/io.c tests/io-driver/ez_print.c
 		# here, we use *.out just so that it's easier to make a .gitignore rule

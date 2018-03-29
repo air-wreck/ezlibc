@@ -210,6 +210,28 @@ ez_sqrt(double x, double err)
 
   /* sqrt(c) is the zero of x^2 - c
      find the root with Newton's method
-     I'll figure this out later */
-  return 0;
+     first we come up with a decent estimate of the root */
+  int exponent = (int) ez_log_b(10, x, err);
+  double mantissa = x / ez_int_exp_b(10, exponent);
+  double init_guess;
+  if (mantissa < 10) {
+    init_guess = 2 * ez_exp_b(10, exponent / 2.0, err);
+  } else if (mantissa < 100) {
+    init_guess = 6 * ez_exp_b(10, exponent / 2.0, err);
+  } else {
+    init_guess = x / 2;  /* come up with a better initial guess for big nums */
+  }
+
+  double prev_guess = init_guess;
+  double guess = (prev_guess + x / prev_guess) / 2.0;
+  int i = 0;
+  while (i < 10) {
+    /* I need to figure out the real error later
+       for now, it just goes ten times, which should be plenty */
+    double tmp_guess = guess;
+    guess = (prev_guess + x / prev_guess) / 2.0;
+    prev_guess = tmp_guess;
+    i++;
+  }
+  return guess;
 }
