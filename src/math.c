@@ -46,10 +46,19 @@ ez_fact(int x)
 {
   int res = 1;
   int n;
-  for (n = 1; n <= x; n++) {
+  for (n = 1; n <= x; n++)
     res *= n;
-  }
   return res;
+}
+
+int
+ez_nCr(int n, int r) {
+  return ez_fact(n) / (ez_fact(r) * ez_fact(n-r));
+}
+
+int
+ez_nPr(int n, int r) {
+  return ez_fact(n) / ez_fact(n-r);
 }
 
 double
@@ -194,13 +203,53 @@ ez_cos(double x, double err)
   return ez_sin(EZ_PI / 2.0 - x, err);
 }
 
+int
+ez_alt_permu(int n) {
+  /* implement memoization later */
+  if (n == 0 || n == 1) return 1;
+
+  int sum = 0;
+  for (int k = 0; k < n; k++)
+    sum += ez_nCr(n-1, k) * ez_alt_permu(k) * ez_alt_permu(n-1-k);
+  return sum / 2;
+}
+
 double
 ez_tan(double x, double err)
 {
-  /* it's probably more accurate/fast to use tangent Taylor polynomial
-     but the series expansion for tan looks mighty Chinese
-     so we'll just fall back on trig identities, although it hurts our err */
-  return ez_sin(x, err) / ez_cos(x, err);
+  /* we can exploit the symmetry tan(-x) = -tan(x) */
+  double y = ez_f_abs(x);
+
+  /* do a range reduction to 0 <= y <= pi/2 */
+  while (y > EZ_PI) {
+    y -= EZ_PI;
+  }
+  int sign = 1;
+  if (y > EZ_PI / 2) {
+    y = EZ_PI - y;
+    sign = -1;
+  }
+
+  /* handle the special case, to a certain tolerance */
+  double tolerance = 0.00000001;
+  if (EZ_PI / 2 - y < tolerance) {
+    return EZ_NAN;
+  }
+
+  /* we use the Mclaurin series
+     this is because the precision is not guaranteed with trig identities
+     here, the next term is the bounds for our error */
+  double term = y;
+  double res = term;
+  int i = 1;
+  while (term > err) {
+    i += 2;
+    term = ez_alt_permu(i) * ez_int_exp_b(y, i) / ez_fact(i);
+    res += term;
+  }
+
+  if (x < 0) res *= -1;
+  return sign * res;
 }
 
 double

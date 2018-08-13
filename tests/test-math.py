@@ -1,6 +1,7 @@
 # unit tests for lib/ezlibc-math.so
 
 import unittest
+import math
 from ctypes import *
 
 lib = CDLL('lib/ezlibc-math.so')
@@ -102,7 +103,7 @@ class Test_EZ_Math(unittest.TestCase):
         lib.ez_sin.argtypes = (c_double, c_double)
         lib.ez_sin.restype = c_double
         self.assertTrue(
-            check_float(0.15284427219,
+            check_float(math.sin(65.82),
                 lib.ez_sin(65.82, 0.0000001),
                 tolerance=0.0000001
             )
@@ -112,7 +113,7 @@ class Test_EZ_Math(unittest.TestCase):
         lib.ez_cos.argtypes = (c_double, c_double)
         lib.ez_cos.restype = c_double
         self.assertTrue(
-            check_float(-0.98825028634,
+            check_float(math.cos(65.82),
                 lib.ez_cos(65.82, 0.0000001),
                 tolerance=0.0000001
             )
@@ -122,9 +123,7 @@ class Test_EZ_Math(unittest.TestCase):
         lib.ez_tan.argtypes = (c_double, c_double)
         lib.ez_tan.restype = c_double
         self.assertTrue(
-            # for some reason, this passes
-            # even though the error should be off
-            check_float(-0.15466150054,
+            check_float(math.tan(65.82),
                 lib.ez_tan(65.82, 0.0000001),
                 tolerance=0.0000001
             )

@@ -75,6 +75,28 @@ ez_ceil(double x);
 int
 ez_fact(int x);
 
+/* combinations of r elements from a set of n; the binomial coefficients
+
+   parameters:
+   int n: the size of the parent set
+   int r: the number of elements to choose for each combination
+
+   returns:
+   int res: the value of nCr(n, r) */
+int
+ez_nCr(int n, int r);
+
+/* permutations of r elements from a set of n
+
+   parameters:
+   int n: the size of the parent set
+   int r: the number of elements to choose for each permutation
+
+   returns:
+   int res: the value of nPr(n, r) */
+int
+ez_nPr(int n, int r);
+
 /* a natural logarithm function
 
    parameters:
@@ -156,6 +178,17 @@ ez_sin(double x, double err);
    double res: the value of cos(x) */
 double
 ez_cos(double x, double err);
+
+/* auxiliary function to compute coefficients of the tangent Mclaurin series
+   alternatively, the number of alternating permutations from 1 to n, over 2
+
+   parameters:
+   int n: the input value (should be odd for tangent, even for secant)
+
+   returns:
+   int res: the tangent or secant number for the given input */
+int
+ez_alt_permu_div_2(int n);
 
 /* tangent
 
