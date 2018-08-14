@@ -6,7 +6,7 @@ basic math functions with pretty slow implementations */
 #define EZ_MATH_
 
 /* IEEE 754 defines the following special double-precision values */
-//#define EZ_NAN  0x7FF7FFFFFFFFFFFF
+/* #define EZ_NAN  0x7FF7FFFFFFFFFFFF */
 #define EZ_NAN (0.0 / 0.0)
 #define EZ_P_INF 0x7FF0000000000000
 #define EZ_N_INF 0xFFF0000000000000
@@ -189,6 +189,39 @@ ez_cos(double x, double err);
    double res: the value of tan(x) */
 double
 ez_tan(double x, double err);
+
+/* inverse sine
+
+   parameters:
+   double x: the argument to asin(x)
+   double err: the allowable error
+
+   returns:
+   double res: the value of asin(x) */
+double
+ez_asin(double x, double err);
+
+/* inverse cosine
+
+   parameters:
+   double x: the argument to acos(x)
+   double err: the allowable error
+
+   returns:
+   double res: the value of acos(x) */
+double
+ez_acos(double x, double err);
+
+/* inverse tangent
+
+   parameters:
+   double x: the argument to atan(x)
+   double err: the allowable error
+
+   returns:
+   double res: the value of atan(x) */
+double
+ez_atan(double x, double err);
 
 /* square root
 

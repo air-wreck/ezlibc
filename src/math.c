@@ -74,7 +74,7 @@ ez_ln(double x, double err)
 
   /* for x > 2, use ln(ab) = ln(a) + ln(b) to reduce argument */
   double res = 0;
-  while (x > 2) {
+  while (x >= 2) {
     res += 0.69314718056;  /* this is ln(2) */
     x /= 2.0;
   }
@@ -131,7 +131,7 @@ ez_int_exp_b(double base, int exp)
   return res;
 }
 
-double
+double  /* note-to-self: consider doing a range reduction first for speed */
 ez_exp(double x, double err)
 {
   /* we first compute e^|x| and then apply negative if need be at the end */
@@ -158,10 +158,35 @@ ez_exp(double x, double err)
 double
 ez_exp_b(double base, double exp, double err)
 {
+  /* if base < 0, this is undefined for real exponents */
+  if (base < 0)
+    return EZ_NAN;
+
+  /* if 0 < base < 1, use (1/a)^b = 1/(a^b) = a^(-b)
+     potentially investigate error compounding? */
+  if (base < 1) {
+    base = 1 / base;
+    exp = -exp;
+  }
+
   /* we use the simple equality that a^b = e^(b*ln(a)); since we have
      series expansions for e^x and ln(x), we can easily compute this
      we just need to be careful not to compound error beyond the bounds
      we use the same general error correction algorithm as ez_log_b */
+  double err0 = err;
+  double pwr_lo;
+  double pwr_hi;
+  double ln;
+  double exp_hi;
+  double exp_lo;
+  do {
+    ln = ez_ln(base, err);
+    pwr_lo = exp * (ln - err);
+    pwr_hi = exp * (ln + err);
+    exp_lo = ez_exp(pwr_lo, err) - err;
+    exp_hi = ez_exp(pwr_hi, err) + err;
+    err /= 10;
+  } while (exp_hi - exp_lo > err0);
   double pwr = exp * ez_ln(base, err);
   return ez_exp(pwr, err);
 }
@@ -231,9 +256,8 @@ ez_tan(double x, double err)
     sign = -1;
   }
 
-  /* handle the special case, to a certain tolerance */
-  double tolerance = 0.00000001;
-  if (EZ_PI / 2 - y < tolerance) {
+  /* handle the special case, to within the given error tolerance */
+  if (EZ_PI / 2 - y < err) {
     return EZ_NAN;
   }
 
@@ -256,6 +280,88 @@ ez_tan(double x, double err)
 }
 
 double
+ez_asin(double x, double err)
+{
+  /* symmetry --- asin(x) is odd */
+  double y = ez_f_abs(x);
+
+  /* reject out-of-range */
+  if (y > 1)
+    return EZ_NAN;
+
+  /* if within error of 1, return pi/2
+     that's probably the wrong bounds, but oh well */
+  if (1 - y < err) {
+    if (x < 0) return -EZ_PI / 2;
+    return EZ_PI / 2;
+  }
+
+  /* use the identity asin(x) = atan( x / sqrt(1-x^2) )
+     again naively correcting for compounded error */
+  double err0 = err;
+  double sqrt_lo;
+  double sqrt_hi;
+  double sqrt;
+  double atan_lo;
+  double atan_hi;
+  do {
+    sqrt = ez_sqrt(1 - y*y, err);
+    sqrt_lo = sqrt - err;
+    sqrt_hi = sqrt + err;
+    atan_lo = ez_atan(y / sqrt_hi, err) - err;
+    atan_hi = ez_atan(y / sqrt_lo, err) + err;
+    err /= 10;
+  } while (atan_hi - atan_lo > err0);
+
+  double res = ez_atan(y / ez_sqrt(1 - y*y, err), err);
+  if (x < 0) res = -res;
+  return res;
+}
+
+double
+ez_acos(double x, double err)
+{
+  /* trig identities to the rescue! */
+  return -ez_asin(x, err) + EZ_PI / 2;
+}
+
+double
+ez_atan(double x, double err)
+{
+  /* symmetry: atan(-x) = -atan(x) */
+  double y = ez_f_abs(x);
+
+  /* if x > 1, use pi/2 - atan(1/x) = atan(x) */
+  int flip = 0;
+  if (y > 1) {
+    flip = 1;
+    y = 1 / y;
+  }
+
+  /* if x is within the given error of 1, just return pi/4 */
+  if (1 - y < err)
+    return EZ_PI / 4;
+
+  /* do a Maclaurin series with alternating error terms */
+  double term = y;
+  double res = term;
+  int deg = 1;
+  int sign = +1;
+  double pwr = y;  /* keeping a running power is cheaper */
+  while (term > err) {
+    deg += 2;
+    sign = -sign;
+    pwr *= y*y;
+    term = pwr / deg;
+    res += sign * term;
+  }
+
+  if (flip) res = EZ_PI / 2 - res;
+  if (x < 0) return -res;
+  return res;
+}
+
+double  /* consider a faster implementation (e.g. Newton, point-by-point) */
 ez_sqrt(double x, double err)
 {
   return ez_exp_b(x, 0.5, err);

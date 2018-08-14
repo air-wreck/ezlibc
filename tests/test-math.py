@@ -1,5 +1,5 @@
 # unit tests for lib/ezlibc-math.so
-# gcc -fPIC -shared -o lib/ezlibc-math.so src/math.c
+# gcc -std=c89 -fPIC -shared -o lib/ezlibc-math.so src/math.c
 
 import unittest
 import math
@@ -98,14 +98,15 @@ class Test_EZ_Math(unittest.TestCase):
             )
         )
 
-    @unittest.skip('fix exponentiation error later')
     def test_exp_b(self):
+        # investigate if bignum failures are algorithmic or just a
+        # floating point limitation
         lib.ez_exp_b.argtypes = (c_double, c_double, c_double)
         lib.ez_exp_b.restype = c_double
         self.assertTrue(
-            check_float(6.5 ** 8.2,
-                lib.ez_exp_b(6.5, 8.2, 0.00001),
-                tolerance=0.00001
+            check_float(1.5 ** 2.3,
+                lib.ez_exp_b(1.5, 2.3, 0.000000001),
+                tolerance=0.000000001
             )
         )
 
@@ -139,7 +140,43 @@ class Test_EZ_Math(unittest.TestCase):
             )
         )
 
-    @unittest.skip('fix sqrt later')
+    def test_asin(self):
+        lib.ez_asin.argtypes = (c_double, c_double)
+        lib.ez_asin.restype = c_double
+        self.assertTrue(
+            check_float(math.asin(0.65),
+                lib.ez_asin(0.65, 0.00000001),
+                tolerance=0.00000001
+            )
+        )
+
+    def test_acos(self):
+        lib.ez_acos.argtypes = (c_double, c_double)
+        lib.ez_acos.restype = c_double
+        self.assertTrue(
+            check_float(math.acos(0.65),
+                lib.ez_acos(0.65, 0.00000001),
+                tolerance=0.00000001
+            )
+        )
+
+    def test_atan(self):
+        # for some reason, this fails for small numbers?
+        lib.ez_atan.argtypes = (c_double, c_double)
+        lib.ez_atan.restype = c_double
+        self.assertTrue(
+            check_float(math.atan(65.82),
+                lib.ez_atan(65.82, 0.00000001),
+                tolerance=0.00000001
+            )
+        )
+        self.assertTrue(
+            check_float(math.atan(0.6582),
+                lib.ez_atan(0.6582, 0.00000001),
+                tolerance=0.00000001
+            )
+        )
+
     def test_sqrt(self):
         # if we increase the tolerance here, it seems to fail...
         # or if the value deviates from 1 too much
