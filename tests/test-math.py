@@ -100,7 +100,7 @@ class Test_EZ_Math(unittest.TestCase):
 
     def test_exp_b(self):
         # investigate if bignum failures are algorithmic or just a
-        # floating point limitation
+        # machine precision limitation
         lib.ez_exp_b.argtypes = (c_double, c_double, c_double)
         lib.ez_exp_b.restype = c_double
         self.assertTrue(
@@ -161,7 +161,6 @@ class Test_EZ_Math(unittest.TestCase):
         )
 
     def test_atan(self):
-        # for some reason, this fails for small numbers?
         lib.ez_atan.argtypes = (c_double, c_double)
         lib.ez_atan.restype = c_double
         self.assertTrue(
@@ -178,14 +177,12 @@ class Test_EZ_Math(unittest.TestCase):
         )
 
     def test_sqrt(self):
-        # if we increase the tolerance here, it seems to fail...
-        # or if the value deviates from 1 too much
         lib.ez_sqrt.argtypes = (c_double, c_double)
         lib.ez_sqrt.restype = c_double
         self.assertTrue(
-            check_float(math.sqrt(1.25),
-                lib.ez_sqrt(1.25, 0.000001),
-                tolerance=0.000001
+            check_float(math.sqrt(12.25),
+                lib.ez_sqrt(12.25, 0.000000001),
+                tolerance=0.000000001
             )
         )
 

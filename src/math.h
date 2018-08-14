@@ -153,7 +153,11 @@ ez_exp(double x, double err);
    double err: the maximum permissible error
 
    returns:
-   double res: the value of base^exp, to within err */
+   double res: the value of base^exp, to within err
+
+   error:
+   will return EZ_NAN if base < 0
+   only ez_int_exp_b will accept negative bases */
 double
 ez_exp_b(double base, double exp, double err);
 
@@ -186,7 +190,10 @@ ez_cos(double x, double err);
    double err: the error
 
    returns:
-   double res: the value of tan(x) */
+   double res: the value of tan(x)
+
+   error:
+   will return EZ_NAN if |x - pi/2| < err (once phase shifted) */
 double
 ez_tan(double x, double err);
 
@@ -197,7 +204,10 @@ ez_tan(double x, double err);
    double err: the allowable error
 
    returns:
-   double res: the value of asin(x) */
+   double res: the value of asin(x)
+
+   error:
+   will return EZ_NAN if x is not in [-1, 1] */
 double
 ez_asin(double x, double err);
 
@@ -208,7 +218,10 @@ ez_asin(double x, double err);
    double err: the allowable error
 
    returns:
-   double res: the value of acos(x) */
+   double res: the value of acos(x)
+
+   error:
+   will return EZ_NAN if x is not in [-1, 1] */
 double
 ez_acos(double x, double err);
 
@@ -230,7 +243,10 @@ ez_atan(double x, double err);
    double err: max permissable error
 
    returns:
-   double res: the value of sqrt(x) */
+   double res: the value of sqrt(x)
+
+   error:
+   will return EZ_NAN if x < 0 */
 double
 ez_sqrt(double x, double err);
 
