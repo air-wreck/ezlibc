@@ -1,4 +1,5 @@
 # unit tests for lib/ezlibc-math.so
+# gcc -fPIC -shared -o lib/ezlibc-math.so src/math.c
 
 import unittest
 import math
@@ -52,6 +53,16 @@ class Test_EZ_Math(unittest.TestCase):
         lib.ez_fact.restype = c_int
         self.assertEqual(120, lib.ez_fact(5))
 
+    def test_nCr(self):
+        lib.ez_nCr.argtypes = (c_int, c_int)
+        lib.ez_nCr.restype = c_int
+        self.assertEqual(10, lib.ez_nCr(5, 2))
+
+    def test_nPr(self):
+        lib.ez_nPr.argtypes = (c_int, c_int)
+        lib.ez_nPr.restype = c_int
+        self.assertEqual(20, lib.ez_nPr(5, 2))
+
     def test_ln(self):
         lib.ez_ln.argtypes = (c_double, c_double)
         lib.ez_ln.restype = c_double
@@ -60,14 +71,13 @@ class Test_EZ_Math(unittest.TestCase):
                 tolerance=0.00001)
         )
 
-    @unittest.skip('we need to fix compounded error later')
     def test_log_b(self):
         lib.ez_log_b.argtypes = (c_double, c_double, c_double)
         lib.ez_log_b.restype = c_double
         self.assertTrue(
-            check_float(1.098071386168515799539836,
-                lib.ez_log_b(64.82, 99.24, 0.0000001),
-                tolerance=0.0000001
+            check_float(math.log(99.24, 64.82),
+                lib.ez_log_b(64.82, 99.24, 0.00000000001),
+                tolerance=0.00000000001
             )
         )
 
@@ -88,12 +98,12 @@ class Test_EZ_Math(unittest.TestCase):
             )
         )
 
-    @unittest.skip('fix compounded error later')
+    @unittest.skip('fix exponentiation error later')
     def test_exp_b(self):
         lib.ez_exp_b.argtypes = (c_double, c_double, c_double)
         lib.ez_exp_b.restype = c_double
         self.assertTrue(
-            check_float(4633290.43424,
+            check_float(6.5 ** 8.2,
                 lib.ez_exp_b(6.5, 8.2, 0.00001),
                 tolerance=0.00001
             )
@@ -120,12 +130,26 @@ class Test_EZ_Math(unittest.TestCase):
         )
 
     def test_tan(self):
+        # WE NEED TO FIX TAN ERROR TO USE LAGRANGE
         lib.ez_tan.argtypes = (c_double, c_double)
         lib.ez_tan.restype = c_double
         self.assertTrue(
             check_float(math.tan(65.82),
                 lib.ez_tan(65.82, 0.0000001),
                 tolerance=0.0000001
+            )
+        )
+
+    @unittest.skip('fix sqrt laters')
+    def test_sqrt(self):
+        # if we increase the tolerance here, it seems to fail...
+        # or if the value deviates from 1 too much
+        lib.ez_sqrt.argtypes = (c_double, c_double)
+        lib.ez_sqrt.restype = c_double
+        self.assertTrue(
+            check_float(math.sqrt(1.25),
+                lib.ez_sqrt(1.25, 0.000001),
+                tolerance=0.000001
             )
         )
 

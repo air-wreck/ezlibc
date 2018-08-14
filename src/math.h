@@ -179,7 +179,7 @@ ez_sin(double x, double err);
 double
 ez_cos(double x, double err);
 
-/* auxiliary function to compute coefficients of the tangent Mclaurin series
+/* auxiliary function to compute coefficients of the tangent Maclaurin series
    alternatively, the number of alternating permutations from 1 to n, over 2
 
    parameters:

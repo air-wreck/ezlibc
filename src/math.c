@@ -52,12 +52,14 @@ ez_fact(int x)
 }
 
 int
-ez_nCr(int n, int r) {
+ez_nCr(int n, int r)
+{
   return ez_fact(n) / (ez_fact(r) * ez_fact(n-r));
 }
 
 int
-ez_nPr(int n, int r) {
+ez_nPr(int n, int r)
+{
   return ez_fact(n) / ez_fact(n-r);
 }
 
@@ -96,8 +98,17 @@ double
 ez_log_b(double base, double x, double err)
 {
   /* use the change-of-base formula with ez_ln()
-     we need to improve the accuracy of ez_ln() to account for err */
-  return ez_ln(x, err) / ez_ln(base, err);
+     we need to improve the accuracy of ez_ln() to account for err
+     do this until the possible error range is within err */
+  double err0 = err;
+  double n = ez_ln(x, err);
+  double d = ez_ln(base, err);
+  while ((n+err)/(d-err) - (n-err)/(d+err) > err0) {
+    err /= 10;
+    n = ez_ln(x, err);
+    d = ez_ln(base, err);
+  }
+  return n / d;
 }
 
 double
@@ -149,7 +160,8 @@ ez_exp_b(double base, double exp, double err)
 {
   /* we use the simple equality that a^b = e^(b*ln(a)); since we have
      series expansions for e^x and ln(x), we can easily compute this
-     we just need to be careful not to compound error beyond the bounds */
+     we just need to be careful not to compound error beyond the bounds
+     we use the same general error correction algorithm as ez_log_b */
   double pwr = exp * ez_ln(base, err);
   return ez_exp(pwr, err);
 }
@@ -204,7 +216,8 @@ ez_cos(double x, double err)
 }
 
 int
-ez_alt_permu(int n) {
+ez_alt_permu(int n)
+{
   /* implement memoization later */
   if (n == 0 || n == 1) return 1;
 
@@ -214,7 +227,7 @@ ez_alt_permu(int n) {
   return sum / 2;
 }
 
-double
+double /* FIX - implement lagrange */
 ez_tan(double x, double err)
 {
   /* we can exploit the symmetry tan(-x) = -tan(x) */
@@ -236,9 +249,10 @@ ez_tan(double x, double err)
     return EZ_NAN;
   }
 
-  /* we use the Mclaurin series
+  /* we use the Maclaurin series
      this is because the precision is not guaranteed with trig identities
-     here, the next term is the bounds for our error */
+     here, we use the Lagrange error term
+     there is some term 0 < z < y such that tan(z) is the error term */
   double term = y;
   double res = term;
   int i = 1;
@@ -255,32 +269,5 @@ ez_tan(double x, double err)
 double
 ez_sqrt(double x, double err)
 {
-  if (x < 0) return EZ_NAN;
-
-  /* sqrt(c) is the zero of x^2 - c
-     find the root with Newton's method
-     first we come up with a decent estimate of the root */
-  int exponent = (int) ez_log_b(10, x, err);
-  double mantissa = x / ez_int_exp_b(10, exponent);
-  double init_guess;
-  if (mantissa < 10) {
-    init_guess = 2 * ez_exp_b(10, exponent / 2.0, err);
-  } else if (mantissa < 100) {
-    init_guess = 6 * ez_exp_b(10, exponent / 2.0, err);
-  } else {
-    init_guess = x / 2;  /* come up with a better initial guess for big nums */
-  }
-
-  double prev_guess = init_guess;
-  double guess = (prev_guess + x / prev_guess) / 2.0;
-  int i = 0;
-  while (i < 10) {
-    /* I need to figure out the real error later
-       for now, it just goes ten times, which should be plenty */
-    double tmp_guess = guess;
-    guess = (prev_guess + x / prev_guess) / 2.0;
-    prev_guess = tmp_guess;
-    i++;
-  }
-  return guess;
+  return ez_exp_b(x, 0.5, err);
 }
