@@ -101,13 +101,13 @@ ez_log_b(double base, double x, double err)
      we need to improve the accuracy of ez_ln() to account for err
      do this until the possible error range is within err */
   double err0 = err;
-  double n = ez_ln(x, err);
-  double d = ez_ln(base, err);
-  while ((n+err)/(d-err) - (n-err)/(d+err) > err0) {
-    err /= 10;
+  double n;
+  double d;
+  do {
     n = ez_ln(x, err);
     d = ez_ln(base, err);
-  }
+    err /= 10;
+  } while ((n+err)/(d-err) - (n-err)/(d+err) > err0);
   return n / d;
 }
 
@@ -215,19 +215,7 @@ ez_cos(double x, double err)
   return ez_sin(EZ_PI / 2.0 - x, err);
 }
 
-int
-ez_alt_permu(int n)
-{
-  /* implement memoization later */
-  if (n == 0 || n == 1) return 1;
-
-  int sum = 0;
-  for (int k = 0; k < n; k++)
-    sum += ez_nCr(n-1, k) * ez_alt_permu(k) * ez_alt_permu(n-1-k);
-  return sum / 2;
-}
-
-double /* FIX - implement lagrange */
+double
 ez_tan(double x, double err)
 {
   /* we can exploit the symmetry tan(-x) = -tan(x) */
@@ -249,18 +237,19 @@ ez_tan(double x, double err)
     return EZ_NAN;
   }
 
-  /* we use the Maclaurin series
-     this is because the precision is not guaranteed with trig identities
-     here, we use the Lagrange error term
-     there is some term 0 < z < y such that tan(z) is the error term */
-  double term = y;
-  double res = term;
-  int i = 1;
-  while (term > err) {
-    i += 2;
-    term = ez_alt_permu(i) * ez_int_exp_b(y, i) / ez_fact(i);
-    res += term;
-  }
+  /* keep on computing more accurate sin and cos estimates until they are good
+     enough to use trig identities to compute tan
+     actually, we can make this way faster by directly adding to the series
+     expansions rather than recomputing each time, but whatever */
+  double err0 = err;
+  double s;
+  double c;
+  do {
+    s = ez_sin(y, err);
+    c = ez_cos(y, err);
+    err /= 10;
+  } while ((s+err)/(c-err) - (s-err)/(c+err) > err0);
+  double res = s / c;
 
   if (x < 0) res *= -1;
   return sign * res;

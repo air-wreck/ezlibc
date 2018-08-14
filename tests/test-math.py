@@ -130,17 +130,16 @@ class Test_EZ_Math(unittest.TestCase):
         )
 
     def test_tan(self):
-        # WE NEED TO FIX TAN ERROR TO USE LAGRANGE
         lib.ez_tan.argtypes = (c_double, c_double)
         lib.ez_tan.restype = c_double
         self.assertTrue(
             check_float(math.tan(65.82),
-                lib.ez_tan(65.82, 0.0000001),
-                tolerance=0.0000001
+                lib.ez_tan(65.82, 0.00000001),
+                tolerance=0.00000001
             )
         )
 
-    @unittest.skip('fix sqrt laters')
+    @unittest.skip('fix sqrt later')
     def test_sqrt(self):
         # if we increase the tolerance here, it seems to fail...
         # or if the value deviates from 1 too much
