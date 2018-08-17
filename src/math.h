@@ -71,7 +71,10 @@ ez_ceil(double x);
    int x: the argument of x!
 
    returns:
-   int res: the value of x! */
+   int res: the value of x!
+
+   error:
+   will return EZ_NAN if x < 0 */
 int
 ez_fact(int x);
 
@@ -119,11 +122,14 @@ ez_ln(double x, double err);
    double err: maximum error allowed
 
    returns:
-   double res: the value of log_{base} (x) */
+   double res: the value of log_{base} (x)
+
+   error:
+   will return EZ_NAN if base < 0 or x < 0 */
 double
 ez_log_b(double base, double x, double err);
 
-/* a general exponential for int exponents
+/* a general exponential for integral exponents
 
    parameters:
    double base: the base for exponentiation
@@ -240,7 +246,7 @@ ez_atan(double x, double err);
 
    parameters:
    double x: arg to sqrt(x)
-   double err: max permissable error
+   double err: max permissible error
 
    returns:
    double res: the value of sqrt(x)

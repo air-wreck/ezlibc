@@ -44,6 +44,9 @@ ez_ceil(double x)
 int
 ez_fact(int x)
 {
+  if (x < 0)
+    return EZ_NAN;
+
   int res = 1;
   int n;
   for (n = 1; n <= x; n++)
@@ -79,7 +82,7 @@ ez_ln(double x, double err)
     x /= 2.0;
   }
 
-  /* now that 0 < x <= 2, we can use the Taylor polynomial
+  /* now that 0 <= x < 2, we can use the Taylor polynomial
      for convenience, we first re-center the series at 0
      the error is bounded by the next term in the series expansion */
   double a = x - 1;
@@ -97,6 +100,9 @@ ez_ln(double x, double err)
 double
 ez_log_b(double base, double x, double err)
 {
+  if (base < 0 || x < 0)
+    return EZ_NAN;
+
   /* use the change-of-base formula with ez_ln()
      we need to improve the accuracy of ez_ln() to account for err
      do this until the possible error range is within err */
@@ -119,8 +125,8 @@ ez_int_exp_b(double base, int exp)
 
   /* first compute base^|exp| */
   double res = base;
-  int tmp_exp = ez_f_abs(exp);
-  int i;
+  unsigned int tmp_exp = ez_f_abs(exp);
+  unsigned int i;
   for (i = 1; i < tmp_exp; i++) {
     res *= base;
   }
@@ -131,24 +137,31 @@ ez_int_exp_b(double base, int exp)
   return res;
 }
 
-double  /* note-to-self: consider doing a range reduction first for speed */
+double
 ez_exp(double x, double err)
 {
   /* we first compute e^|x| and then apply negative if need be at the end */
   double y = ez_f_abs(x);
 
+  /* do a range reduction to 0 <= y < 1 using:
+     e^x = e^(k+y) = e^k e^y = m e^y, if k is integral, e^k is exact */
+  unsigned int k = (int) y;
+  y -= k;
+  double m = ez_int_exp_b(EZ_E, k);
+  err /= m;  /* make sure we don't compound error */
+
   /* we can use the Taylor polynomial with the Lagrange error term
      there exists some 0 < z < y such that e^z is the error coefficient
-     we can just take e^ceil(y) as an overestimation of the error */
-  double err_coeff = ez_int_exp_b(EZ_E, ez_ceil(y));
+     we can just take e^ceil(y) = e as an overestimation of the error */
   double res = 1;
-  int deg = 1;
+  unsigned int deg = 1;
   double term = y;
-  while (err_coeff * term * y / (double) deg > err) {
+  while (EZ_E * term * y / (double) deg > err) {
     res += term;
     deg++;
     term *= y / (double) deg;
   }
+  res = m * (res + term);
 
   /* if x is negative, we have e^x = 1/e^|x| = 1/e^y */
   if (x < 0) return 1.0 / res;
@@ -361,8 +374,24 @@ ez_atan(double x, double err)
   return res;
 }
 
-double  /* consider a faster implementation (e.g. Newton, point-by-point) */
+double  /* consider a faster implementation (e.g. Newton, digit-by-digit) */
 ez_sqrt(double x, double err)
 {
-  return ez_exp_b(x, 0.5, err);
+  /* handle special values */
+  if (x < 0)
+    return EZ_NAN;
+  if (x == 0)
+    return 0;
+
+  /* reduce argument x to 0 <= y < 4 by finding an even exponent 2k and using:
+     sqrt(x) = sqrt( 2^(2k) * y ) = 2^k * sqrt(y)
+     this technique is taken from the OpenJDK implementation */
+  unsigned int m = 1;
+  while (x > 4) {
+    x /= 4;
+    m <<= 1;
+  }
+
+  /* now the error is really 2^k * err, so we need to use err = err0 / 2^k */
+  return m * ez_exp_b(x, 0.5, err / m);
 }
