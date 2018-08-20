@@ -2,8 +2,13 @@
 
 some nice examples of how to use some stuff from the library
 
-you can build with "make example" */
+you can build this file with:
+gcc -std=c89 -m32 -Wall -nostdlib example.c src/io.c src/defs.c -o example
 
+it is probably better to build the library first and then link against that,
+however */
+
+#include "src/start.h"
 #include "src/io.h"
 
 int
@@ -22,7 +27,7 @@ main()
   ez_print(&b, 1);
   ez_str_print("\n");
 
-  /* get a string from stding with ez_n_getstr() */
+  /* get a string from stdin with ez_n_getstr() */
   ez_str_print("enter a string of at most length 9: ");
   char str[10] = {0};
   int str_len = ez_n_getstr(str, 9);
@@ -33,9 +38,6 @@ main()
     ez_print(str, str_len);
   }
   ez_str_print("\n");
-
-  /* prematurely exiting with ez_exit() */
-  ez_exit(0);
 
   return 0;
 }

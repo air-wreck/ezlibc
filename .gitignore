@@ -3,6 +3,7 @@ example
 
 # don't track compiled lib/ stuff, since this is system-dependent binary
 lib/*.so
+lib/*.o
 
 # don't track this weird example.dSYM thing
 example.dSYM/*

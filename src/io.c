@@ -6,7 +6,7 @@
 ***********************************/
 /* all IO code is written for 32-bit x86 architecture
    this code depends on the specific compilation target OS
-   the default is Linux, but using -D_OSX will copmile for OX X and BSD */
+   the default is Linux, but using -D_OSX will compile for OS X and BSD */
 
 #ifdef _OSX  /* OS X and BSD systems */
 
@@ -92,7 +92,7 @@ ez_sys_read(int fd, char *buf, int len)
 void
 ez_sys_exit(int status)
 {
-  int syscall_no = 1;
+  const int syscall_no = 1;
   __asm__ volatile (
     "int $0x80;"
     :: "a" (syscall_no), "b" (status)
@@ -213,7 +213,6 @@ ez_n_getstr(char *buf, int len)
   const int stdin_fd = 0;
   return ez_sys_read(stdin_fd, buf, len);
 }
-
 
 int
 ez_str10_to_int(const char *str10)
