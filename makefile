@@ -2,7 +2,7 @@ CC = gcc
 
 all: example lib/ezlibc-math.so lib/ezlibc-io.so lib/ezlibc.so
 
-example: example.c src/math.c src/io.c
+example: example.c src/io.c
 		cc example.c src/math.c src/io.c -o example -m32 -g
 
 libs: src/io.c src/math.c

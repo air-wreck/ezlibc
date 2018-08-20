@@ -152,7 +152,7 @@ ez_exp(double x, double err)
 
   /* we can use the Taylor polynomial with the Lagrange error term
      there exists some 0 < z < y such that e^z is the error coefficient
-     we can just take e^ceil(y) = e as an overestimation of the error */
+     we can just take e > e^y as an overestimation of the error coeff. */
   double res = 1;
   unsigned int deg = 1;
   double term = y;

@@ -2,7 +2,7 @@
 
 import unittest, subprocess
 
-# RIP...can't open an -m32 executate in 64-bit Python
+# RIP...can't open an -m32 executable in 64-bit Python
 # except I wrote all the assembly for 32-bit x86
 # so, we'll instead write C driver programs in ./io-driver
 # each program will wrap one function

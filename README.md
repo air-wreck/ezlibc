@@ -40,6 +40,8 @@ However, I personally wouldn't trust any makefiles I wrote. You can directly bui
 gcc -std=c89 -fPIC -shared -o lib/ezlibc-math.so src/math.c
 ```
 
+Note that you'll need to compile the IO library with `-m32`. If you want to compile IO for OS X, you'll need to specify `-D_OSX` (otherwise, it defaults to Linux).
+
 ### testing
 Unit tests are currently being done in Python, because that's pretty nice. To run a specific test (like the `math` library), just run the test file from the project root:
 
@@ -65,7 +67,7 @@ Update August 2018: I have fixed the compounding error issue. The library routin
 Also, I need to figure out how all those special values (`nan`, `+inf`, `-inf`) actually work.
 
 #### io
-The original IO code was written to target 32-bit OS-X (which uses the BSD syscall convention). I have changed a bit since I started this project, and I think I am going to port everything to `x86_64` Linux in the future. Thus, work on IO is going to stall a bit for now.
+The IO code is supposed to work on OS X and Linux (both 32-bit x86). You can choose which one using compiler flags (defaults to Linux). The assembly is simple enough that it will probably work fine on BSD, but don't take my word for it.
 
 #### mem?
 I think I want to offer more advanced IO and other functionality in the future (maybe even expand math to include linalg routines!), but a key step that needs to be taken before that is writing good memory management functions (think `memcpy()`, etc.). I think I'll have to start by writing a `malloc()` implementation, but a project like that will have to wait until I have more free time (read: done with college apps).
