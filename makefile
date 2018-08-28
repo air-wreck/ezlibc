@@ -1,16 +1,32 @@
+# C copmiler
 CC = gcc
 
-all: example lib/ezlibc-math.so lib/ezlibc-io.so lib/ezlibc.so lib/ezlibc-start.o
+# architecture (pass -D_x64 for 64-bit or -D_OSX for OS X)
+ARCH = -m32
 
-example: example.c lib/ezlibc.so lib/ezlibc-start.o
-		cc -nostdlib -m32 example.c -L. -l:lib/ezlibc.so -l:lib/ezlibc-start.o -o example
+# flags for linking against library
+LIBFLAGS = -nostdlib -L. -l:lib/ezlibc.so -l:lib/ezlibc-start.o
 
-libs: src/io.h src/math.h src/start.h src/io.c src/math.c src/start.c
-		cc -std=c89 -Wall -fPIC -shared -m64 -o lib/ezlibc-math64.so src/math.c
-		cc -std=c89 -Wall -fPIC -shared -m32 -o lib/ezlibc-math.so src/math.c
-		cc -std=c89 -Wall -fPIC -shared -m32 -o lib/ezlibc-io.so src/io.c
-		cc -std=c89 -Wall -fPIC -shared -m32 -o lib/ezlibc.so src/math.c src/io.c
-		cc -std=c89 -Wall -m32 -c -o lib/ezlibc-start.o src/start.c
+# flags for compiling library
+CFLAGS = -std=c89 -Wall -fPIC -shared
+
+
+# builds everything
+all: example libs
+
+# removes the library files
+rm:
+	rm lib/*
+
+# builds the included example.c file
+example: example.c libs
+		$(CC) example.c $(ARCH) $(LIBFLAGS) -o example
+
+# builds JUST the library files
+libs: src/io.h src/math.h src/start.h src/syscalls.h src/io.c src/math.c src/start.c src/syscalls.c
+		$(CC) $(ARCH) $(CFLAGS) -o lib/ezlibc-math.so src/math.c
+		$(CC) $(ARCH) $(CFLAGS) -o lib/ezlibc.so src/syscalls.c src/math.c src/io.c
+		$(CC) $(ARCH) $(CFLAGS) -c -o lib/ezlibc-start.o src/start.c
 
 # fix these later
 tests: src/io.c tests/io-driver/ez_print.c

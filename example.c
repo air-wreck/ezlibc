@@ -3,10 +3,12 @@
 some nice examples of how to use some stuff from the library
 
 you can build this file with:
-gcc -std=c89 -m32 -Wall -nostdlib example.c src/io.c src/defs.c -o example
+gcc -std=c89 -m32 -Wall -nostdlib example.c src/io.c src/start.c -o example
 
 it is probably better to build the library first and then link against that,
-however */
+however:
+make example
+./example */
 
 #include "src/start.h"
 #include "src/io.h"

@@ -10,7 +10,7 @@ Right now, I have no clue where this project is headed, so the structure is a li
 
 Ultimately, this is supposed to become a little library that can be used to write basic programs in C without needing to use a "real" C library. Feel free to contribute stuff if so inclined.
 
-### getting started
+## getting started
 All you need to use this library is a plain old C compiler. If you want to run the unit tests, Python will also be necessary. Once you have those, you can just clone and run the init script (which really just makes a target directory for the compiler); for example:
 
 ```sh
@@ -21,20 +21,17 @@ cd ezlibc
 
 It might be somewhat important to note that whatever C compiler you choose, it must understand GCC extended inline `__asm__` syntax for the IO library to compile correctly. If you only plan on compiling the math library, that won't be a problem.
 
-### usage
+## usage
 Once you build the library, all the compiled stuff is in `lib/`. As shown in the example, you'll want to `#include` the appropriate header files (always `src/start.h`, and then others if you need them) from within your `*.c` file. You can then compile your code with a few compiler flags:
 
 | Flag                    | Purpose |
 |:----------------------- |:------- |
-| `-m32`                  | Compile for 32-bit target architecture |
 | `-L.`                   | Look for library files in the local directory |
 | `-l:lib/ezlibc.so`      | Link against the shared main library |
 | `-l:lib/ezlibc-start.o` | Link against the static start routine |
 | `-nostdlib`             | Do not link against `libc` (use our own library instead) |
 
 Optionally, you can also use `-stc=c89` for stricter Standard conformance, and `-Wall` is usually a decent idea.
-
-This will allow you to access the entire library (and drop the usage of `libc` entirely). However, if all you're interested in is the math library, the `lib/ezlibc-math.so` file is pretty much standalone. Also (only for math), there is a 64-bit version available as `lib/ezlibc-math64.so`. If you need the rest of the library, you're stuck in 32-bit mode.
 
 So, a sort of working minimal example of usage of this project could look like (assuming you've cloned, set up, and built everything):
 
@@ -51,12 +48,12 @@ int main() {
 ```
 
 ```sh
-gcc -m32 -L. -l:lib/ezlibc.so -l:lib/ezlibc-start.o -nostdlib hello.c -o hello
+gcc -L. -l:lib/ezlibc.so -l:lib/ezlibc-start.o -nostdlib hello.c -o hello
 ./hello
 ```
 
-### building
-The makefile is ugly, but it works. You can build the example with:
+## building
+You might not want to trust any makefiles I wrote, but it seems to work. You can build the example with:
 
 ```sh
 make example
@@ -68,15 +65,16 @@ And the entire library with:
 make libs
 ```
 
-If you don't trust any makefiles I wrote (possibly a wise choice), you can directly build, for example, the math library with:
+`Important!` This library can be built for a few different systems and architectures: Linux (both x86 and x86_64) and OS X/BSD (x86 only). *If you do not specify any special flags for the makefile, it will default to 32-bit Linux!* Here's a handy table of how you should build the library for different architectures:
 
-```sh
-gcc -std=c89 -fPIC -shared -o lib/ezlibc-math.so src/math.c
-```
+|           | 32-bit                  | 64-bit                  |
+|:---------:|:----------------------- |:----------------------- |
+| **Linux** | `make libs`             | `make libs ARCH=-D_x64` |
+| **OS X**  | `make libs ARCH=-D_OSX` | unsupported             |
 
-Note that you'll need to compile all non-math libraries with `-m32`. If you want to compile IO for OS X, you'll need to specify `-D_OSX` (otherwise, it defaults to Linux). Note that the OS X option is not automatically included in the makefile yet, so you'll need to manually specify it.
+Note that while building the library for 64-bit OS X is unsupported right now, you can still use it on 64-bit OS X. You'll just need to tell gcc `-m32` (compile for 32-bit architectures) when using the library.
 
-### testing
+## testing
 Unit tests are currently being done in Python, because that's pretty nice. To run a specific test (like the `math` library), just run the test file from the project root:
 
 ```sh
@@ -89,7 +87,7 @@ Note that the IO tests rely on separately compiled binaries that provide wrapper
 make tests
 ```
 
-### comments
+## comments
 
 #### math
 Right now, I'm prioritizing readability/understandableness (I don't think that's a word) over raw speed/efficiency, but I might go back and write more efficient stuff later. As such, the code is being written purely in "portable" C89 -- no architecture-specific processor instructions like Intel's `fsin`.
@@ -98,11 +96,16 @@ Update August 2018: I have fixed the compounding error issue. The library routin
 
 Also, I need to figure out how all those special values (`nan`, `+inf`, `-inf`) actually work.
 
+I think I want to write a `qmath.c` library sometime for imprecise (but faster) arithmetic. This is because a lot of the really fun approximations (Chebyshev polynomials, Stirling's approximation, minimax fitting, etc.) don't fit too well with this whole "user-specified precision" thing.
+
 #### io
 The IO code is supposed to work on OS X and Linux (both 32-bit x86). You can choose which one using compiler flags (defaults to Linux). The assembly is simple enough that it will probably work fine on BSD, but don't take my word for it.
 
 #### start
 As I later found out, one issue with doing away with `libc` is that we need to define the `_start` routine ourselves. In order to keep the user code more like "regular" C code (i.e. using `int main()`), I decided to write a small, statically-linked start routine, found in `start.c`. I haven't gotten around to implementing `argc` and `argv` yet.
+
+#### syscalls
+It might logically make more sense to distribute the syscall wrappers between the relevant files (for example, keeping `write` and `read` in `src/io.c` and `exit` in `src/start.c`), but since I have so few syscall wrappers right now, I've decided to consolidate them into one `src/syscalls.c` file for organization.
 
 #### mem?
 I think I want to offer more advanced IO and other functionality in the future (maybe even expand math to include linalg routines!), but a key step that needs to be taken before that is writing good memory management functions (think `memcpy()`, etc.). I think I'll have to start by writing a `malloc()` implementation, but a project like that will have to wait until I have more free time (read: done with college apps).

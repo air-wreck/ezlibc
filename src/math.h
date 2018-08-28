@@ -174,7 +174,7 @@ ez_exp_b(double base, double exp, double err);
    double err: the maximum permissible error for the result
 
    returns:
-   double res: the value of sin(x), accurate to at least e */
+   double res: the value of sin(x), accurate to at least err */
 double
 ez_sin(double x, double err);
 

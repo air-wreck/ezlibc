@@ -1,5 +1,11 @@
 #include "start.h"
-#include "io.h"
+#include "syscalls.h"
+
+void
+ez_exit(status)
+{
+  ez_sys_exit(status);
+}
 
 void
 _start()

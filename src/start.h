@@ -12,4 +12,7 @@ _start();
 int
 main();
 
+void
+ez_exit(int status);
+
 #endif

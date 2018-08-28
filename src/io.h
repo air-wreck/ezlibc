@@ -9,18 +9,6 @@ basic input and output */
    we'll just hope that this holds true for our platforms */
 #define EZ_NULL 0
 
-/* these are syscall wrappers
-   their implementation is system-specific */
-int
-ez_sys_write(int fd, const char *msg, int len);
-
-int
-ez_sys_read(int fd, char *buf, int len);
-
-void
-ez_sys_exit(int status);
-
-
 /* printing to stdout
 
    parameters:
@@ -101,12 +89,5 @@ ez_n_getstr(char *buf, int len);
    returns -1 on error */
 int
 ez_str10_to_int(const char *str10);
-
-/* exit process
-
-   parameters:
-   int status: exit status */
-void
-ez_exit(int status);
 
 #endif
