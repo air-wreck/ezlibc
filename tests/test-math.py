@@ -24,6 +24,14 @@ class Test_EZ_Math(unittest.TestCase):
         self.assertTrue(check_float(65.82, lib.ez_f_abs(65.82)))
         self.assertTrue(check_float(65.82, lib.ez_f_abs(-65.82)))
 
+    def test_f_mod(self):
+        lib.ez_f_mod.argtypes = (c_double, c_double)
+        lib.ez_f_mod.restype = c_double
+        self.assertTrue(check_float(1.1, lib.ez_f_mod(3.7, 1.3)))
+        self.assertTrue(check_float(0.2, lib.ez_f_mod(-3.7, 1.3)))
+        self.assertTrue(check_float(-0.2, lib.ez_f_mod(3.7, -1.3)))
+        self.assertTrue(check_float(-1.1, lib.ez_f_mod(-3.7, -1.3)))
+
     def test_round(self):
         lib.ez_round.argtypes = (c_double,)
         lib.ez_round.restype = c_int

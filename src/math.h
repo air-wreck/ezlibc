@@ -12,8 +12,9 @@ basic math functions with pretty slow implementations */
 #define EZ_N_INF 0xFFF0000000000000
 
 /* define basic mathematical constants as macros */
-#define EZ_E  2.718281828459045
-#define EZ_PI 3.141592653589793
+#define EZ_E   2.718281828459045
+#define EZ_PI  3.141592653589793
+#define EZ_2PI 6.283185307179586
 
 /* absolute value of an integer
 
@@ -34,6 +35,20 @@ ez_int_abs(int x);
    double res: the value of |x| */
 double
 ez_f_abs(double x);
+
+/* modulus of a floating point number
+
+   parameters:
+   double a: the first parameter to a mod b
+   double b: the second parameter to a mod b
+
+   result:
+   double res: the value of a mod b
+
+   error:
+   will return EZ_NAN if b == 0 */
+double
+ez_f_mod(double a, double b);
 
 /* rounds a double to an int
 

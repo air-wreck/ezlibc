@@ -17,6 +17,13 @@ ez_f_abs(double x)
   return x >= 0 ? x : -1.0 * x;
 }
 
+double
+ez_f_mod(double a, double b)
+{
+  double c = a - (b * (int)(a/b)) + b;
+  return c - (b * (int)(c/b));
+}
+
 int
 ez_round(double x)
 {
@@ -76,11 +83,11 @@ ez_ln(double x, double err)
   if (x == 1) return 0;
 
   /* for x > 2, use ln(ab) = ln(a) + ln(b) to reduce argument */
-  double res = 0;
-  while (x >= 2) {
-    res += 0.69314718056;  /* this is ln(2) */
-    x /= 2.0;
-  }
+  unsigned int v = (int) x;
+  unsigned int k = 0;  /* will be log2(v) */
+  while (v >>= 1) k++;
+  double res = k * 0.69314718055994529;  /* this is ln(2) */
+  x /= (1 << k);
 
   /* now that 0 <= x < 2, we can use the Taylor polynomial
      for convenience, we first re-center the series at 0
@@ -211,11 +218,8 @@ ez_sin(double x, double err)
      just don't forget to check sign at the end */
   double y = ez_f_abs(x);
 
-  /* do a range reduction on y to make 0 <= y <= pi/2
-     we can do better with log_{2pi} (x) later, but just loop for now */
-  while (y > 2 * EZ_PI) {
-    y -= 2.0 * EZ_PI;
-  }
+  /* do a range reduction on y to make 0 <= y <= 2pi */
+  y = ez_f_mod(y, EZ_2PI);
 
   /* y is in the unit circle, now get in first quadrant */
   int sign = 1;
@@ -260,9 +264,7 @@ ez_tan(double x, double err)
   double y = ez_f_abs(x);
 
   /* do a range reduction to 0 <= y <= pi/2 */
-  while (y > EZ_PI) {
-    y -= EZ_PI;
-  }
+  y = ez_f_mod(y, EZ_PI);
   int sign = 1;
   if (y > EZ_PI / 2) {
     y = EZ_PI - y;
@@ -385,12 +387,12 @@ ez_sqrt(double x, double err)
 
   /* reduce argument x to 0 <= y < 4 by finding an even exponent 2k and using:
      sqrt(x) = sqrt( 2^(2k) * y ) = 2^k * sqrt(y)
-     this technique is taken from the OpenJDK implementation */
-  unsigned int m = 1;
-  while (x > 4) {
-    x /= 4;
-    m <<= 1;
-  }
+     this technique is adapted from the OpenJDK implementation */
+  unsigned int v = (int) x;
+  unsigned int k = 0;  /* will be log2(v) */
+  while (v >>= 1) k++;
+  unsigned int m = (1 << k);
+  x /= (1 << 2*k);
 
   /* now the error is really 2^k * err, so we need to use err = err0 / 2^k */
   return m * ez_exp_b(x, 0.5, err / m);
