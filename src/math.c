@@ -229,7 +229,7 @@ ez_sin(double x, double err)
     y -= EZ_PI;
     sign = -1;
   } else if (y > 3.0 * EZ_PI / 2.0) {
-    y = 2.0 * EZ_PI - y;
+    y = EZ_2PI - y;
     sign = -1;
   }
 

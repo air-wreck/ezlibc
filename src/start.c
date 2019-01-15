@@ -1,6 +1,17 @@
 #include "start.h"
 #include "syscalls.h"
 
+/* _start must be implemented in assembly */
+#ifdef _x64  /** 64-bit **/
+
+#else  /** 32-bit **/
+/*__asm__ (
+  ".global _start;"
+  "_start:;"
+  " "
+); */
+#endif
+
 void
 ez_exit(status)
 {

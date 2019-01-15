@@ -6,9 +6,6 @@ dependence on linking against libc */
 #ifndef EZ_START_
 #define EZ_START_
 
-void
-_start();
-
 int
 main();
 
