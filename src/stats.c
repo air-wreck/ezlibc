@@ -37,6 +37,10 @@ ez_erf(double x, double err)
   if (x < 0) s = -1;
   x = ez_f_abs(x);
 
+  /* scale err to account for normalization at the end */
+  double k = 1.1283791670955125739;  /* 2/sqrt(pi) */
+  err /= k;
+
   /* Maclaurin series with alternating error term */
   double term = x;
   double i = 0;
@@ -54,7 +58,6 @@ ez_erf(double x, double err)
   }
 
   /* normalize and return result */
-  double k = 1.1283791670955125739;  /* 2/sqrt(pi) */
   return s * k * res;
 }
 
