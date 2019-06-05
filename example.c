@@ -14,12 +14,20 @@ make example
 #include "src/io.h"
 
 int
-main()
+main(int argc, char **argv)
 {
-  /* using the ez_print() function to write a string to stdout */
-  const char *msg = "Hello World!\n";
-  int len = 13;
+  /* show that argc and argv work as expected */
+  const char *msg = "argc is: ";
+  int len = 9;
   ez_print(msg, len);
+  ez_int_print(argc);
+  ez_str_print("\n");
+  
+  msg = "argv[0] is: ";
+  len = 12;
+  ez_print(msg, len);
+  ez_str_print(argv[0]);
+  ez_str_print("\n");
 
   /* getting a character from stdin with ez_getchar() */
   ez_str_print("enter a character: ");
