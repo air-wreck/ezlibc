@@ -18,9 +18,10 @@ void
 _start()  /* argc/argv not supported on OS X */
 {
   int status = main();
-  ex_exit(status);
+  ez_exit(status);
 }
 
+/** Linux **/
 #else
   #ifdef _x64  /** 64-bit, which is buggy **/
     __asm__ (  /* TODO: combine this with x86 */

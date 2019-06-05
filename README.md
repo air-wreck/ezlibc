@@ -2,9 +2,7 @@
 
 A C library written by Eric Zheng!
 
-This is not supposed to be a POSIX-compliant C Standard Library or anything. Something of that scope is way beyond me. Basically, I was learning Taylor series and stuff in calc and thought that it would be cool to make custom implementations of some common math functions. Then I realized that I could simultaneously learn a bit of assembly by writing some low-level IO. Then this happened. (It's basically a learning exercise for a high school student.)
-
-Currently, there is a decent basic math library (featuring arbitrary precision floating point calculations!) and a very rudimentary IO library.
+This is not supposed to be a POSIX-compliant C Standard Library or anything. This is just a learning exercise for a high school student. Currently, there is a decent basic math library (featuring "high precision" floating point calculations!) and a very rudimentary IO library.
 
 Right now, I have no clue where this project is headed, so the structure is a little haphazard. Basically, the C source goes in `src/`, the compiled stuff goes in `lib/`, and the unit tests go in `tests/`.
 
@@ -99,13 +97,13 @@ Also, I need to figure out how all those special values (`nan`, `+inf`, `-inf`) 
 I think I want to write a `qmath.c` library sometime for imprecise (but faster) arithmetic. This is because a lot of the really fun approximations (Chebyshev polynomials, Stirling's approximation, minimax fitting, etc.) don't fit too well with this whole "user-specified precision" thing.
 
 #### io
-The IO code is supposed to work on OS X and Linux (both 32-bit x86). You can choose which one using compiler flags (defaults to Linux). The assembly is simple enough that it will probably work fine on BSD, but don't take my word for it.
+The IO code is supposed to work on OS X and Linux (both 32-bit x86). You can choose which one using compiler flags (defaults to Linux). The assembly is simple enough that it will probably work fine on BSD, but don't take my word for it. To make things more convenient, I will probably implement a subset of `printf`.
 
 #### start
-As I later found out, one issue with doing away with `libc` is that we need to define the `_start` routine ourselves. In order to keep the user code more like "regular" C code (i.e. using `int main()`), I decided to write a small, statically-linked start routine, found in `start.c`. I haven't gotten around to implementing `argc` and `argv` yet.
+As I later found out, one issue with doing away with `libc` is that we need to define the `_start` routine ourselves. In order to keep the user code more like "regular" C code (i.e. using `int main()`), I decided to write a small, statically-linked start routine, found in `start.c`. Currently, `argc` and `argv` are only working on 32-bit Linux.
 
 #### syscalls
 It might logically make more sense to distribute the syscall wrappers between the relevant files (for example, keeping `write` and `read` in `src/io.c` and `exit` in `src/start.c`), but since I have so few syscall wrappers right now, I've decided to consolidate them into one `src/syscalls.c` file for organization.
 
 #### mem?
-I think I want to offer more advanced IO and other functionality in the future (maybe even expand math to include linalg routines!), but a key step that needs to be taken before that is writing good memory management functions (think `memcpy()`, etc.). I think I'll have to start by writing a `malloc()` implementation, but a project like that will have to wait until I have more free time (read: done with college apps).
+I think I want to offer more advanced IO and other functionality in the future (maybe even expand math to include linalg routines!), but a key step that needs to be taken before that is writing good memory management functions (think `memcpy()`, etc.). I will probably get around to a `malloc` someday.
