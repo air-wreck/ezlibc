@@ -1,7 +1,6 @@
 /* implements global entry point (_start)
 
-   argc and argv are not supported on OS X
-   it also doesn't work on 64-bit Linux yet, but I'm working on that */
+   argc and argv are not supported on OS X */
 
 #include "start.h"
 #include "syscalls.h"
@@ -23,19 +22,17 @@ _start()  /* argc/argv not supported on OS X */
 
 /** Linux **/
 #else
-  #ifdef _x64  /** 64-bit, which is buggy **/
-    __asm__ (  /* TODO: combine this with x86 */
+  #ifdef _x64  /** 64-bit **/
+    __asm__ (
       ".global _start;"
       ".global main;"
       ".global ez_exit;"
       "_start:;"
-      "  movq %rsp, %rax;"
-      "  addq $8, %rax;"
-      "  pushq %rax;"
-      "  pushq 8(%rsp);"
+      "  movq (%rsp), %rdi;"  /* argc */
+      "  movq %rsp, %rsi;"    /* argv */
+      "  addq $8, %rsi;"
       "  call main;"
-      "  addq $16, %rsp;"
-      "  pushq %rax;"
+      "  movq %rax, %rdi;"
       "  call ez_exit;"
     );
 
