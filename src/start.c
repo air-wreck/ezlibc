@@ -1,6 +1,6 @@
 /* implements global entry point (_start)
 
-   argc and argv are not supported on OS X */
+   OS X testing is generally lagging behind */
 
 #include "start.h"
 #include "syscalls.h"
@@ -13,12 +13,22 @@ ez_exit(int status)
 
 /** OS X and BSD **/
 #ifdef _OSX
-void
-_start()  /* argc/argv not supported on OS X */
-{
-  int status = main();
-  ez_exit(status);
-}
+__asm__ (
+    ".global _start;"
+    ".global main;"
+    ".global ez_exit;"
+    "_start:;"
+    "  movl %%esp, %%eax;"  /* argv */
+    "  addl $4, %%eax;"
+    "  pushl %%eax;"
+    "  pushl 4(%%esp);"     /* argc */
+    "  pushl %%eax;"        /* dummy to inline syscall in BSD */
+    "  call main;"
+    "  addl $12, %%esp;"
+    "  pushl %%eax;"        /* return status */
+    "  pushl %%eax;"        /* dummy dword */
+    "  call ez_exit;"
+)
 
 /** Linux **/
 #else

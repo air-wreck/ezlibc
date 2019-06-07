@@ -100,7 +100,7 @@ I think I want to write a `qmath.c` library sometime for imprecise (but faster) 
 The IO code is supposed to work on OS X and Linux (both 32-bit x86). You can choose which one using compiler flags (defaults to Linux). The assembly is simple enough that it will probably work fine on BSD, but don't take my word for it. To make things more convenient, I will probably implement a subset of `printf`.
 
 #### start
-As I later found out, one issue with doing away with `libc` is that we need to define the `_start` routine ourselves. In order to keep the user code more like "regular" C code (i.e. using `int main()`), I decided to write a small, statically-linked start routine, found in `start.c`. Currently, `argc` and `argv` are only working on Linux.
+As I later found out, one issue with doing away with `libc` is that we need to define the `_start` routine ourselves. In order to keep the user code more like "regular" C code (i.e. using `int main()`), I decided to write a small, statically-linked start routine, found in `start.c`. Currently, `argc` and `argv` are only working on Linux. There is code for OS X/BSD, but testing on that platform isn't a high priority.
 
 #### syscalls
 It might logically make more sense to distribute the syscall wrappers between the relevant files (for example, keeping `write` and `read` in `src/io.c` and `exit` in `src/start.c`), but since I have so few syscall wrappers right now, I've decided to consolidate them into one `src/syscalls.c` file for organization.
