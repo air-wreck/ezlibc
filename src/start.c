@@ -14,20 +14,18 @@ ez_exit(int status)
 /** OS X and BSD **/
 #ifdef _OSX
 __asm__ (
-    ".global _start;"
-    ".global main;"
-    ".global ez_exit;"
-    "_start:;"
-    "  movl %%esp, %%eax;"  /* argv */
-    "  addl $4, %%eax;"
-    "  pushl %%eax;"
-    "  pushl 4(%%esp);"     /* argc */
-    "  pushl %%eax;"        /* dummy to inline syscall in BSD */
-    "  call main;"
-    "  addl $12, %%esp;"
-    "  pushl %%eax;"        /* return status */
-    "  pushl %%eax;"        /* dummy dword */
-    "  call ez_exit;"
+  ".global _start;"
+  ".global main;"
+  ".global ez_exit;"
+  "_start:;"
+  "  movl %%esp, %%eax;"  /* argv */
+  "  addl $4, %%eax;"
+  "  pushl %%eax;"
+  "  pushl 4(%%esp);"     /* argc */
+  "  call main;"
+  "  addl $8, %%esp;"
+  "  pushl %%eax;"        /* return status */
+  "  call ez_exit;"
 )
 
 /** Linux **/

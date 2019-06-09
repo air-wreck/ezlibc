@@ -15,7 +15,7 @@ ez_int_print(int n)
   if (n == 0) return ez_print("0", 1);
 
   /* our positive-forcing won't work for INT_MIN, so handle as special case */
-  if (n == -2147483648) return ez_print("-2147483648", 11);
+  if (n < -2147483647) return ez_print("-2147483648", 11);
 
   /* handle sign separately */
   char *sign = "+";

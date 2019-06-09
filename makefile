@@ -23,11 +23,11 @@ example: example.c libs
 		$(CC) example.c $(ARCH) $(LIBFLAGS) -o example
 
 # builds JUST the library files
-libs: src/io.h src/math.h src/start.h src/syscalls.h src/qmath.h src/stats.h src/io.c src/math.c src/start.c src/syscalls.c src/qmath.c src/stats.c
+libs: src/io.h src/math.h src/start.h src/syscalls.h src/qmath.h src/mem.h src/io.c src/math.c src/start.c src/syscalls.c src/qmath.c src/mem.c
 		$(CC) $(ARCH) $(CFLAGS) -o lib/ezlibc-math.so src/math.c
 		$(CC) $(ARCH) $(CFLAGS) -o lib/ezlibc-qmath.so src/qmath.c src/math.c
 		$(CC) $(ARCH) $(CFLAGS) -o lib/ezlibc-stats.so src/stats.c src/math.c
-		$(CC) $(ARCH) $(CFLAGS) -o lib/ezlibc.so src/syscalls.c src/math.c src/io.c src/qmath.c src/stats.c
+		$(CC) $(ARCH) $(CFLAGS) -o lib/ezlibc.so src/syscalls.c src/math.c src/io.c src/qmath.c src/mem.c
 		$(CC) $(ARCH) $(CFLAGS) -c -o lib/ezlibc-start.o src/start.c
 
 # fix these later

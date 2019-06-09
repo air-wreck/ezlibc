@@ -117,6 +117,7 @@ ez_int_qexp_b(double base, int exp)
 
 }
 
+/* TODO: actually implement this */
 double
 ez_qexp(double x)
 {
@@ -126,7 +127,7 @@ ez_qexp(double x)
   const double a2 = 0.50977983530544;
   const double a1 = 0.998757050931838;
   const double a0 = 1.00002493721519;
-  return x;
+  return a0 * a1 * a2 * a3 * a4;
 }
 
 double

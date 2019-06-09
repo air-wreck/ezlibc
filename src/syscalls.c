@@ -142,5 +142,49 @@ ez_sys_write(int fd, const char *msg, int len)
       );
       return len;
     }
+
+    struct ez_mmap_arg_struct {
+      unsigned long addr;
+      unsigned long len;
+      unsigned long prot;
+      unsigned long flags;
+      unsigned long fd;
+      unsigned long offset;
+    };
+
+    void*
+    ez_sys_mmap(void *addr, unsigned int len, int prot,
+                int flags, int fd, int offset)
+    {
+      struct ez_mmap_arg_struct args;
+      args.addr = (unsigned long) addr;
+      args.len = len;
+      args.prot = prot;
+      args.flags = flags;
+      args.fd = fd;
+      args.offset = offset;
+      
+      void *ptr;
+      const int syscall_no = 90;
+      __asm__ (
+        "int $0x80;"
+        : "=a" (ptr)
+        : "a" (syscall_no), "b" (&args)
+      );
+      return ptr;
+    }
+
+    int
+    ez_sys_munmap(void *addr, unsigned int len)
+    {
+      const int syscall_no = 91;
+      int ret;
+      __asm__ (
+        "int $0x80;"
+        : "=a" (ret)
+        : "a" (syscall_no), "b" (addr), "c" (len)
+      );
+      return ret;
+    }
   #endif
 #endif
