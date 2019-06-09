@@ -6,7 +6,6 @@
 #define EZ_FLAGS (EZ_SYS_MMAP_MAP_PRIVATE | EZ_SYS_MMAP_MAP_ANONYMOUS)
 
 /* these arrays hold ptr/len info for malloc
- * init with ten elements, zeroed out
  * we can always malloc/realloc more space if we need it */
 #define EZ_MALLOC_INIT_SIZE 10
 unsigned int EZ_MALLOC_TABLE_SIZE = 0;
@@ -113,8 +112,8 @@ ez_free(void *ptr)
     ez_malloc_ptr[i - 1] = ez_malloc_ptr[i];
     ez_malloc_len[i - 1] = ez_malloc_len[i];
   }
-  ez_malloc_len[EZ_MALLOC_TABLE_SIZE - 1] = EZ_NULL;
-  ez_malloc_ptr[EZ_MALLOC_TABLE_SIZE - 1] = 0;
+  ez_malloc_ptr[EZ_MALLOC_TABLE_SIZE - 1] = EZ_NULL;
+  ez_malloc_len[EZ_MALLOC_TABLE_SIZE - 1] = 0;
 }
 
 void*
