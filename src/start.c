@@ -2,6 +2,9 @@
 
    OS X testing is generally lagging behind */
 
+/* TODO: apparently, the C99 standard specifies that
+ * argv[argc] should return a null pointer, not segfault */
+
 #include "start.h"
 #include "syscalls.h"
 

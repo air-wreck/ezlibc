@@ -31,7 +31,7 @@ Once you build the library, all the compiled stuff is in `lib/`. As shown in the
 
 Optionally, you can also use `-stc=c89` for stricter Standard conformance, and `-Wall` is usually a decent idea.
 
-So, a sort of working minimal example of usage of this project could look like (assuming you've cloned, set up, and built everything):
+So, a sort of minimal working example of usage of this project could look like (assuming you've cloned, set up, and built everything):
 
 ```C
 /* hello.c */
@@ -50,17 +50,19 @@ gcc -L. -l:lib/ezlibc.so -l:lib/ezlibc-start.o -nostdlib hello.c -o hello
 ./hello
 ```
 
+Note that the `ez_*` and `EZ_*` namespaces are reserved by this library.
+
 ## building
-You might not want to trust any makefiles I wrote, but it seems to work. You can build the example with:
-
-```sh
-make example
-```
-
-And the entire library with:
+You might not want to trust any makefiles I wrote, but it seems to work. You can build the library with:
 
 ```sh
 make libs
+```
+
+And the library plus additional usage example with:
+
+```sh
+make example
 ```
 
 `Important!` This library can be built for a few different systems and architectures: Linux (both x86 and x86_64) and OS X/BSD (x86 only). *If you do not specify any special flags for the makefile, it will default to 32-bit Linux!* Here's a handy table of how you should build the library for different architectures:
@@ -105,5 +107,6 @@ As I later found out, one issue with doing away with `libc` is that we need to d
 #### syscalls
 It might logically make more sense to distribute the syscall wrappers between the relevant files (for example, keeping `write` and `read` in `src/io.c` and `exit` in `src/start.c`), but since I have so few syscall wrappers right now, I've decided to consolidate them into one `src/syscalls.c` file for organization.
 
-#### mem?
-I think I want to offer more advanced IO and other functionality in the future (maybe even expand math to include linalg routines!), but a key step that needs to be taken before that is writing good memory management functions (think `memcpy()`, etc.). I will probably get around to a `malloc` someday.
+#### mem
+`malloc` has finally been written, but only for 32-bit Linux, and the implementation is very poor. I think I'm going to make the implementation more refined when I get around to it.
+

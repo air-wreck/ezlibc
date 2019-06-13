@@ -35,8 +35,8 @@ ez_malloc_grow_table(int len)
   /* unless that was the original global table, we should free
    * the previous table */
   if (EZ_MALLOC_TABLE_SIZE > 0) {
-    ez_free(ez_malloc_ptr);
-    ez_free(ez_malloc_len);
+    ez_sys_munmap(ez_malloc_ptr, EZ_MALLOC_TABLE_SIZE * sizeof(void *));
+    ez_sys_munmap(ez_malloc_len, EZ_MALLOC_TABLE_SIZE * sizeof(int));
   }
 
   ez_malloc_ptr = new_ptr;
@@ -49,6 +49,10 @@ ez_malloc(int size)
   /* this is an ugly implementation with an mmap/munmap syscall
    * for everything; once I get this working, I'll probably write
    * a more sophisticated version */
+
+  /* if size is zero, the Standard says to return NULL */
+  if (size == 0)
+    return EZ_NULL;
 
   /* if this is the first run of malloc, initialize the global
    * mapping arrays */
@@ -94,6 +98,9 @@ ez_calloc(int len, int mem_size)
 void
 ez_free(void *ptr)
 {
+  if (ptr == EZ_NULL)
+    return;
+
   /* find index of *ptr in global mapping table */
   unsigned int index = 0;
   unsigned int i;

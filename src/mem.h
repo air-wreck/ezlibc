@@ -8,8 +8,11 @@
 #ifndef EZ_MEM_
 #define EZ_MEM
 
-void*
-ez_unsafe_do_malloc(int size);
+/* this is an internal utility subroutine
+ * you don't need to worry about it
+ * actually, calling it will break the program, probably */
+void
+ez_malloc_grow_table(int len);
 
 void*
 ez_malloc(int size);
