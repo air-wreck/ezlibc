@@ -9,7 +9,9 @@ dependence on linking against libc */
 int
 main();
 
+#ifdef _x64
 void
-ez_exit(int status);
+ez_wrap_exit(int status);
+#endif
 
 #endif
