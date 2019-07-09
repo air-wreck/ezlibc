@@ -41,6 +41,7 @@ ez_malloc_grow_table(int len)
 
   ez_malloc_ptr = new_ptr;
   ez_malloc_len = new_len;
+  EZ_MALLOC_TABLE_SIZE = len;
 }
 
 void*
@@ -56,10 +57,8 @@ ez_malloc(int size)
 
   /* if this is the first run of malloc, initialize the global
    * mapping arrays */
-  if (EZ_MALLOC_TABLE_SIZE == 0) {
+  if (EZ_MALLOC_TABLE_SIZE == 0)
     ez_malloc_grow_table(EZ_MALLOC_INIT_SIZE);
-    EZ_MALLOC_TABLE_SIZE = EZ_MALLOC_INIT_SIZE;
-  }
 
   /* get first available index in global mapping array */
   int index = -1;
@@ -72,10 +71,8 @@ ez_malloc(int size)
   
   /* if the global arrays are running low, we should expand them
    * we will malloc a new array with double the space */
-  if (EZ_MALLOC_TABLE_SIZE - index < 3) {
+  if (EZ_MALLOC_TABLE_SIZE - index < 3)
     ez_malloc_grow_table(EZ_MALLOC_TABLE_SIZE * 2);
-    EZ_MALLOC_TABLE_SIZE *= 2;
-  }
   
   void *ptr = ez_sys_mmap(EZ_NULL, size, EZ_PROT, EZ_FLAGS, -1, 0);
   ez_malloc_ptr[index] = ptr;

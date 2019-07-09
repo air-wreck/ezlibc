@@ -4,6 +4,8 @@
    32-bit x86 Linux; right now, you can specify -D_OSX for OS X + BSD
    ON LINUX ONLY you can specify -D_x64 for 64-bit architectures */
 
+#include "syscalls.h"
+
 #ifdef _x64
   const int ez_arch = 64;
 #else
@@ -107,6 +109,44 @@ ez_sys_write(int fd, const char *msg, int len)
       return len;
     }
 
+    void*
+    ez_sys_mmap(void *addr, unsigned int len, int prot,
+                int flags, int fd, int offset)
+    {
+      const int syscall_no = 9;
+      void *ptr;
+      __asm__ (
+        "pushq %%r10;"  /* save original values of %r10, %r9, %r8 */
+        "pushq %%r9;"
+        "pushq %%r8;"
+        "movq %5, %%r10;"  /* move args into appropriate registers */
+        "movq %6, %%r8;"
+        "movq %7, %%r9;"
+        "syscall;"
+        "popq %%r8;"  /* restore register values */
+        "popq %%r9;"
+        "popq %%r10;"
+        : "=a" (ptr)
+        : "a" (syscall_no), "D" (addr), "S" (len), "d" (prot),
+          "g" (flags), "g" (fd), "g" (offset)
+        : "r10", "r9", "r8"
+      );
+      return ptr;
+    }
+
+    int
+    ez_sys_munmap(void *addr, unsigned int len)
+    {
+      const int syscall_no = 11;
+      int ret;
+      __asm__ (
+        "syscall;"
+        : "=a" (ret)
+        : "a" (syscall_no), "D" (addr), "S" (len)
+      );
+      return ret;
+    }
+
   #else  /** 32-bit **/
     void
     ez_sys_exit(int status)
@@ -142,15 +182,6 @@ ez_sys_write(int fd, const char *msg, int len)
       );
       return len;
     }
-
-    struct ez_mmap_arg_struct {
-      unsigned long addr;
-      unsigned long len;
-      unsigned long prot;
-      unsigned long flags;
-      unsigned long fd;
-      unsigned long offset;
-    };
 
     void*
     ez_sys_mmap(void *addr, unsigned int len, int prot,
